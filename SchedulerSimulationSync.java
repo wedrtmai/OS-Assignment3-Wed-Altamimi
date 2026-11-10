@@ -1,10 +1,10 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Random;
-// TODO (Feature 1 and Feature 2): import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantLock;
 // TODO (Feature 3):               import java.util.concurrent.Semaphore;
 
 // ANSI Color Codes for enhanced terminal output (same as Assignment 1)
@@ -105,57 +105,73 @@ class SharedStats {
 // In Assignment 1 only the main thread used the queue. Now several CPUs poll and re-enqueue processes
 // at the same time, so every access to `list` and `map` is a critical section.
 class ReadyQueue {
-    private final LinkedList<Thread> list = new LinkedList<>();   // FIFO queue of threads
-    private final Map<Thread, Process> map = new HashMap<>();     // thread -> process (same idea as Assignment 1)
+     private final LinkedList<Thread> list = new LinkedList<>(); // FIFO queue of threads 
+     private final Map<Thread, Process> map = new HashMap<>();   // thread -> process
+     
+// Feature 1: mutex lock protecting 'list' and 'map' (shared by all CPUs)
+private final ReentrantLock queueLock = new ReentrantLock();
 
-    // TODO Feature 1: declare the lock protecting `list` and `map` here
+// TODO Feature 3: declare the counting semaphore that counts the processes waiting in the ready queue here
 
-    // TODO Feature 3: declare the counting semaphore that counts the processes waiting in the ready queue here
-
-    // Add a process to the ready queue (new process, or a process that did not finish its quantum)
-    public void add(Process process) {
-        // TODO Feature 1: protect this critical section
+// Add a process to the ready queue (new process, or a process that did not finish its quantum)
+public void add(Process process) {
+    queueLock.lock();                // Feature 1: enter the critical section
+    try {
         Thread thread = new Thread(process);
         list.add(thread);
         map.put(thread, process);
-
-        // TODO Feature 3: signal that one more process is available in the queue
-
-        System.out.println(Colors.BLUE + "  ➕ " + Colors.BOLD + Colors.CYAN + process.getName() + Colors.RESET +
-                Colors.BLUE + " (Priority: " + process.getPriority() + ") added to ready queue" + Colors.RESET +
-                " │ Remaining: " + Colors.YELLOW + process.getRemainingTime() + "ms" + Colors.RESET +
-                " of " + process.getBurstTime() + "ms");
+    } finally {
+        queueLock.unlock();          // Feature 1: always release the lock
     }
 
-    // Remove and return the thread at the head of the queue (or null if the queue is empty)
-    public Thread poll() {
-        // TODO Feature 1: protect this critical section
+    // TODO Feature 3: signal that one more process is available in the queue
+
+    System.out.println(Colors.BLUE + "  ➕ " + Colors.BOLD + Colors.CYAN + process.getName() + Colors.RESET +
+            Colors.BLUE + " (Priority: " + process.getPriority() + ") added to ready queue" + Colors.RESET +
+            " │ Remaining: " + Colors.YELLOW + process.getRemainingTime() + "ms" + Colors.RESET +
+            " of " + process.getBurstTime() + "ms");
+}
+
+// Remove and return the thread at the head of the queue (or null if the queue is empty)
+public Thread poll() {
+    queueLock.lock();                // Feature 1: enter the critical section
+    try {
         if (list.isEmpty()) {
             return null;
         }
-        Thread head = list.getFirst();      // 1) read the head of the queue
-        RaceWindow.pause();                 //    <- another CPU can read the SAME head here
-        list.removeFirst();                 // 2) remove the head (it may be a different thread by now!)
+        Thread head = list.getFirst(); // 1) read the head of the queue
+        RaceWindow.pause();            // (do not remove)
+        list.removeFirst();            // 2) remove the head: now nobody else can interfere
         return head;
+    } finally {
+        queueLock.unlock();          // Feature 1: released even after the return
     }
+}
 
-    public Process processOf(Thread thread) {
-        // TODO Feature 1: protect this access
+public Process processOf(Thread thread) {
+    queueLock.lock();
+    try {
         return map.get(thread);
+    } finally {
+        queueLock.unlock();
     }
+}
 
-    // Names of the processes currently waiting in the queue (used to display the ready queue)
-    public String snapshot() {
-        // TODO Feature 1: protect this critical section
+// Names of the processes currently waiting in the queue (used to display the ready queue)
+public String snapshot() {
+    queueLock.lock();
+    try {
         StringBuilder sb = new StringBuilder();
         for (Thread t : list) {
             if (sb.length() > 0) sb.append(" → ");
             sb.append(map.get(t).getName());
         }
         return sb.length() == 0 ? "empty" : sb.toString();
+    } finally {
+        queueLock.unlock();
     }
 }
-
+}
 // Class representing a process (same as Assignment 1) - executes ONE time quantum per thread start
 class Process implements Runnable {
     private final String name;
