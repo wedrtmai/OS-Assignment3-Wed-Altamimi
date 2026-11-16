@@ -32,11 +32,11 @@
 
 | Field | Your Answer |
 |-------|-------------|
-| **Full Name** | [Write your full name here] |
-| **Student ID** | [Write your student ID here] |
-| **University Email** | [yourid]@std.psau.edu.sa |
-| **GitHub Username** | [your-github-username] |
-| **Repository Link** | [Paste your repository link here] |
+| **Full Name** | [WED RAED ALTAMIMI] |
+| **Student ID** | [446052008] |
+| **University Email** | [446052008]@std.psau.edu.sa |
+| **GitHub Username** | [wedrtmai] |
+| **Repository Link** | [https://github.com/wedrtmai/OS-Assignment3-Wed-Altamimi] |
  
 ---
 
@@ -132,69 +132,69 @@
 
 ## Your Development Log
 
-### Entry 1 - [Date and Time]
+### Entry 1 - [November 9, 2026, 8:30 PM]
 **What I did**:
-
+Set up the GitHub repository, forked the starter, renamed it, and set my student ID in the code.
 **Details**:
-
+I forked from makopt/OS-Assignment3-Starter-481, renamed the repo in Settings, confirmed it was Public, and made the first
 **Challenges**:
-
+VS Code was in Restricted Mode and I had to trust the folder before Git worked.
 **Solution**:
-
+Clicked "Manage Workspace Trust" and allowed the folder.
 **Time spent**:
-
+1 hour
 ---
 
-### Entry 2 - [Date and Time]
+### Entry 2 - [November 10, 2026, 06:00 PM]
 **What I did**:
-
+Ran the starter code 3 times and observed the race conditions and WATCHDOG errors.
 **Details**:
-
+The verification showed expected 23 context switches but observed 21, expected 12 completed processes but observed 11, and 1266 busy-wait polls. The WATCHDOG fired because completedProcessCount never reached 12.
 **Challenges**:
-
+ The output was different every run, sometimes all correct and sometimes with MISMATCH.
 **Solution**:
-
+Understood that race conditions depend on timing, which is why they are hard to detect.
 **Time spent**:
-
+1 hour
 ---
 
-### Entry 3 - [Date and Time]
+### Entry 3 - [November 11, 2026, 1:30 PM]
 **What I did**:
-
+ Implemented Feature 1 (ReentrantLock on the ready queue) and Feature 2 (locks on shared statistics).
 **Details**:
-
+Added queueLock to all 4 methods in ReadyQueue (add, poll, processOf, snapshot). Added 3 separate locks in SharedStats for contextSwitchCount, completedProcessCount, and totalServiceTime, including both update methods and getters.
 **Challenges**:
-
+Accidentally deleted lines from the code and had to restore them.
 **Solution**:
-
+Used Discard Changes in VS Code Source Control to restore the file.
 **Time spent**:
-
+2 hours
 ---
 
-### Entry 4 - [Date and Time]
+### Entry 4 - [November 15, 2026, 11:00 PM]
 **What I did**:
-
+ Implemented Feature 3 (counting semaphore to replace busy waiting).
 **Details**:
-
+Added Semaphore readyCount initialized to 0 in ReadyQueue. Added release() in add(), acquire() in CpuWorker before poll(), and shutdown signal release(totalCPUs) when the last process completes. Busy-waiting polls dropped from 1266 to 0.
 **Challenges**:
-
+ The semaphore was not placed correctly at first and caused WATCHDOG errors.
 **Solution**:
-
+Fixed the acquire() placement in CpuWorker and added the shutdown signal release(totalCPUs)
 **Time spent**:
-
+1.5 hour
 ---
 
-### Entry 5 - [Date and Time]
+### Entry 5 - [November 16, 2026, 12:00 PM]
 **What I did**:
-
+Completed MY_WORK.md (development log, reflection, answers) and recorded the video
 **Details**:
-
+Filled in the development log, reflection answers, and technical answers. Recorded a 2-3 minute video showing the repository, code walkthrough, execution with all 4 verification lines green, and explanation of the semaphore concept.
 **Challenges**:
-
+Writing the reflection and answers in my own words while connecting them to the code.
 **Solution**:
-
+Referred back to the code and the starter output screenshots to write specific examples.
 **Time spent**:
-
+2 hours
 ---
 
 ### Entry 6 - [Optional - Date and Time]
@@ -214,14 +214,14 @@
 
 > 💡 **TIP:** Fill this in **last**, after all entries are written.
 
-**Total time spent on assignment**: [X hours]
+**Total time spent on assignment**: [7.5 hours]
 
 **Most challenging part**:
-
+Implementing the counting semaphore in Feature 3. Specifically, placing the acquire() method in the correct spot inside CpuWorker and correctly handling the shutdown sequence to wake up all blocked CPUs at the end.
 **Most interesting learning**:
-
+Seeing a race condition actually happen in the starter code. It was fascinating to realize that a simple counter increment takes three distinct steps (read-modify-write) and fails completely without mutex locks.
 **What I would do differently next time**:
-
+ I would improve my coding habits when debugging. Instead of making messy edits and relying on the "undo" shortcut, I will use Git's "Discard Changes" feature earlier to revert to a clean state when things go wrong.
 ---
 
 # Part B: Reflection (0.5 mark)
@@ -240,7 +240,7 @@
 
 **Your Answer:** *(5-7 sentences)*
 
-[Write your answer here.]
+[Before this assignment, my understanding of synchronization was purely theoretical. Seeing the starter code fail showed me exactly how race conditions happen when multiple CPUs access shared data. I learned that simple operations like incrementing a counter take three steps and can be interrupted at any time. This proved that using locks to protect shared data is an absolute requirement, not just an option. I also saw how semaphores are much more efficient than busy-waiting because they block idle threads instead of wasting CPU cycles.]
 
 ## Question 2: What was the most challenging part of this assignment?
 
@@ -248,7 +248,7 @@
 
 **Your Answer:** *(5-7 sentences)*
 
-[Write your answer here.]
+[ The most challenging part was implementing the semaphore in Feature 3. Unlike earlier parts that just needed basic locks, this required completely changing how worker threads wait for tasks. Getting the shutdown sequence right was difficult, as CPUs could easily get blocked forever after finishing their work. I also had to understand why the semaphore must start at zero instead of one. If it started at one, a CPU might try to pull a process from an empty queue. Finally, finding the exact correct placement of acquire() before poll() took careful debugging.]
 
 ## Question 3: How did you overcome the challenges you faced?
 
@@ -256,7 +256,7 @@
 
 **Your Answer:** *(5-7 sentences)*
 
-[Write your answer here.]
+[I overcame these challenges through careful testing and analyzing the program's error logs. The console outputs were my best debugging tools during this process. For example, a "WATCHDOG" error clearly showed when my threads were deadlocked, while a "MISMATCH" pointed out synchronization failures. I also improved my coding habits after making messy edits that broke the code. Instead of relying on the undo shortcut, I learned to discard changes completely or replace entire class files to start fresh.]
 
 ## Question 4: Where can synchronization concepts be applied in real-world applications?
 
@@ -264,19 +264,18 @@
 
 **Your Answer:** *(5-7 sentences)*
 
-[Write your answer here.]
+[Synchronization is a strict requirement for almost all modern software systems. In banking, concurrent money transfers need locks to prevent data corruption and incorrect balances. Airline systems rely on these exact mechanisms to stop two customers from booking the exact same seat simultaneously. Operating systems also depend heavily on semaphores and mutexes to schedule processes and manage memory safely. Ultimately, any real-world application using multiple threads and shared data will fail without precise synchronization.]
 
 ### Optional: What would you like to learn more about?
 
-[Any topics related to synchronization or operating systems that you're curious about?]
+[I would like to learn more about how modern operating systems like Linux or Windows implement synchronization at the kernel level, and how they detect or prevent deadlocks in real life.]
 
 ### Optional: How confident do you feel about synchronization concepts now?
 
-[Beginner / Intermediate / Confident. What do you understand well? What needs more practice?]
+[Confident. I understand mutual exclusion and how semaphores work very well now. I just need a bit more practice with complex scenarios involving multiple semaphores at the same time.]
 
 ### Optional: Feedback on the assignment
-
-[Any comments? Was it helpful? Too easy or hard? Suggestions?]
+[It was very helpful. Seeing the race condition actually break the code and using the watchdog made the theoretical concepts from Chapter 5 much easier to understand.]
 
 ---
 
@@ -298,20 +297,38 @@
 
 **Your Answer:** *(3-5 sentences)*
 
-[Write your answer here.]
+[When I ran the starter code, the verification block showed: expected 23 context switches but observed 21, expected 12 completed processes but observed 11, expected 89481ms total service time but observed 79667ms, and 1266 busy-wait polls. The WATCHDOG also fired because completedProcessCount never reached 12. The race condition happened like this: CPU-1 reads contextSwitchCount = 5, then RaceWindow.pause() sleeps 1ms, during which CPU-2 also reads contextSwitchCount = 5. CPU-1 writes 6, then CPU-2 also writes 6. One increment is lost: the counter should be 7 but is 6. On a real machine this happens without RaceWindow because modern CPUs execute threads in parallel and the read-modify-write window is only a few nanoseconds wide, making the bug extremely hard to detect.]
 
 Verification block of the **original starter**:
-```
-[Paste the verification block (or the exception/watchdog message) of the starter here]
+ WATCHDOG: the simulation did not finish (41 s). A process was lost, or a CPU is blocked forever, or the 'completed' counter lost an update.
+
+═══ VERIFICATION (expected values are computed from YOUR seed) ═══
+Context switches (quanta executed)     expected 23      observed 21      ✘ MISMATCH
+Completed processes                    expected 12      observed 11      ✘ MISMATCH
+Total service time (ms)                expected 89481   observed 79667   ✘ MISMATCH
+Busy-waiting polls (must be 0)         expected 0       observed 1266    ✘ MISMATCH
+✘ At least one check failed (see the ✘ lines above): a race condition or busy waiting is still present.
+
 ```
 
 Verification block of **my final version**:
-```
-[Paste the verification block of your final version here (all lines ✔)]
-```
+═══ VERIFICATION (expected values are computed from YOUR seed) ═══
+Context switches (quanta executed)     expected 23      observed 23      ✔
+Completed processes                    expected 12      observed 12      ✔
+Total service time (ms)                expected 89481   observed 89481   ✔
+Busy-waiting polls (must be 0)         expected 0       observed 0       ✔
+✔ All shared values are consistent.
+
+
 
 **Explanation of the timeline:**
-[Explain the lost update step by step.]
+[In my original starter output, the contextSwitchCount showed an expected value of 23, but the observed value was only 21. This means two context switch increments were lost due to a race condition. Here is the step-by-step timeline of how one of those updates was lost:
+CPU-1 reads the shared contextSwitchCount value as 20.
+The RaceWindow.pause() forces CPU-1 to sleep for 1ms.
+While CPU-1 is sleeping, CPU-2 also reads the contextSwitchCount value as 20.
+CPU-1 wakes up, increments its local value to 21, and writes 21 back to contextSwitchCount.
+Immediately after, CPU-2 increments its local value (which was 20) to 21, and writes 21 back to contextSwitchCount.
+Even though two CPUs performed a context switch, the counter only went up by one. The exact same issue happened with completedProcessCount (expected 12, observed 11), which caused the simulation to hang because the main thread's watchdog never saw the counter reach 12. This happens on real machines because the time between reading and writing a shared variable is incredibly small, making the bug appear randomly and unpredictably.]
 
 ## Question 2: Critical Sections and Lock Granularity
 
@@ -321,12 +338,15 @@ Verification block of **my final version**:
 
 **Your Answer:** *(3-5 sentences)*
 
-[Write your answer here.]
+[I protected four critical sections in ReadyQueue (add, poll, processOf, snapshot) with one lock called queueLock, because all four methods access the same list and map objects. I protected six critical sections in SharedStats (three update methods and three getters) with three separate locks: contextSwitchLock, completedProcessLock, and serviceTimeLock. I chose one lock per variable because the three counters are completely independent: CPU-1 can update contextSwitchCount while CPU-2 updates totalServiceTime at the same time without any conflict. With one lock for all three, this parallelism would be lost. The ready queue uses a different lock than the statistics because they protect different data structures, and the default ReentrantLock is non-fair meaning threads are not guaranteed to acquire the lock in arrival order, but this is acceptable for this simulation.]
 
 | Critical section (variable / method) | Lock used | Why it needs protection |
 |---|---|---|
-| [e.g., `ReadyQueue.poll()`] | [lock name] | [reason] |
-| [...] | [...] | [...] |
+| `ReadyQueue` (`add`, `poll`, `processOf`, `snapshot`) | `queueLock` | Protects the shared `list` and `map` from concurrent modification by multiple CPUs. |
+| `SharedStats` (`incrementContextSwitch`, `getContextSwitchCount`) | `contextSwitchLock` | Protects the shared `contextSwitchCount` from lost updates. |
+| `SharedStats` (`incrementCompletedProcess`, `getCompletedProcessCount`) | `completedProcessLock` | Protects the shared `completedProcessCount` from lost updates. |
+| `SharedStats` (`addServiceTime`, `getTotalServiceTime`) | `serviceTimeLock` | Protects the shared `totalServiceTime` from lost updates. |
+
 
 ## Question 3: Busy Waiting vs Semaphore
 
@@ -336,7 +356,7 @@ Verification block of **my final version**:
 
 **Your Answer:** *(3-5 sentences)*
 
-[Write your answer here.]
+[In the starter code, a CPU that found the queue empty called Thread.sleep(20) and tried again in a loop. In my first run, this produced 1266 busy-wait polls, meaning the CPUs wasted CPU time checking an empty queue 1266 times. My semaphore readyCount is initialized to 0 because the queue starts empty. Each call to add() calls readyCount.release(), incrementing the semaphore by 1. Each CPU calls readyCount.acquire() before taking a process, which blocks the thread until a process is available without wasting CPU time. After the initial 12 calls to add() in main, the semaphore value equals 12. The last CPU calls release(totalCPUs) when all processes are done, which wakes up all blocked CPUs so they can exit. Without this shutdown signal, the CPUs would wait on acquire() forever and the program would hang.]
 
 ## Question 4: Classical Problems and Deadlock
 
@@ -347,24 +367,24 @@ Verification block of **my final version**:
 **Your Answer:** *(3-5 sentences)*
 
 **Classical problem and roles**:
-[Name the problem; who is the producer, who is the consumer?]
+[This assignment is an instance of the Producer-Consumer problem.The main thread and the CpuWorkers that re-enqueue unfinished processes act as producers (they call add()), while all CpuWorkers act as consumers (they call poll()). ]
 
 **Semaphores for a bounded queue (name and initial value)**:
-[Name the three semaphores and their initial values.]
+[ If the ready queue were bounded with capacity K, I would need three semaphores: mutex initialized to 1 for mutual exclusion, empty initialized to K counting empty slots, and full initialized to 0 counting available processes.]
 
 **Deadlock scenario and prevention**:
-[Describe the scenario and the necessary condition you would break.]
+[ A deadlock would occur if a CPU called mutex.acquire() before full.acquire(): the CPU holds the mutex and waits for full, but the producer cannot call add() because it cannot acquire mutex. To prevent this, full.acquire() must always be called before mutex.acquire(), breaking the circular wait condition which is one of the four necessary conditions for deadlock.]
 
 ## Summary
 
 **Key concepts I understood through these questions:**
-1.
-2.
-3.
+1.How race conditions happen during the read-modify-write cycle.
+2.Using ReentrantLock to enforce mutual exclusion in critical sections.
+3.Replacing busy waiting with a counting semaphore to save CPU cycles.
 
 **Concepts I need to study more:**
-1.
-2.
+1.Deadlock prevention and avoidance algorithms.
+2.The differences between fair and non-fair locks in Java.
 
 ---
 
@@ -373,33 +393,33 @@ Verification block of **my final version**:
 > ⚠️ **WARNING:** Go through every line. Blackboard does not accept submissions after the deadline, which is **November 14, 2026**.
 
 **Repository**
-- [ ] Repository is **PUBLIC** (Settings → Danger Zone → Visibility)
-- [ ] Repository is renamed to `OS-Assignment3-YourFirstName-YourLastName`
-- [ ] GitHub account uses the university email (`@std.psau.edu.sa`)
+- [ ✅] Repository is **PUBLIC** (Settings → Danger Zone → Visibility)
+- [ ✅] Repository is renamed to `OS-Assignment3-YourFirstName-YourLastName`
+- [ ✅] GitHub account uses the university email (`@std.psau.edu.sa`)
 
 **Code**
-- [ ] Student ID is set in `SchedulerSimulationSync.java` (line 304)
-- [ ] My code is based **only** on the starter of this repository (nothing copied from previous assignments)
-- [ ] Code compiles and runs with no errors, and terminates by itself (no `⛔ WATCHDOG`)
-- [ ] Feature 1 (ready queue lock), Feature 2 (statistics locks) and Feature 3 (semaphore, no busy waiting) all work
-- [ ] **The four verification lines are ✔ in 5 consecutive runs**
-- [ ] Every lock is released in a `finally` block
-- [ ] `RaceWindow`, `Config`, the verification block and the watchdog are **unchanged**
-- [ ] Each feature has clear comments
+- [ ✅] Student ID is set in `SchedulerSimulationSync.java` (line 304)
+- [ ✅] My code is based **only** on the starter of this repository (nothing copied from previous assignments)
+- [ ✅] Code compiles and runs with no errors, and terminates by itself (no `⛔ WATCHDOG`)
+- [ ✅] Feature 1 (ready queue lock), Feature 2 (statistics locks) and Feature 3 (semaphore, no busy waiting) all work
+- [✅ ] **The four verification lines are ✔ in 5 consecutive runs**
+- [✅ ] Every lock is released in a `finally` block
+- [ ✅] `RaceWindow`, `Config`, the verification block and the watchdog are **unchanged**
+- [ ✅] Each feature has clear comments
 
 **Commits**
-- [ ] **At least 4 meaningful commits, ideally 7 or more**
-- [ ] **One commit per feature**
-- [ ] Commits are spread over **different dates** (not all in the last hour)
-- [ ] Everything is **pushed** to GitHub
+- [✅ ] **At least 4 meaningful commits, ideally 7 or more**
+- [ ✅] **One commit per feature**
+- [✅ ] Commits are spread over **different dates** (not all in the last hour)
+- [✅ ] Everything is **pushed** to GitHub
 
 **This file (`MY_WORK.md`)**
-- [ ] Full name and student ID filled in at the top
-- [ ] Development log has **5+ entries** on different dates
-- [ ] Reflection: 4 questions, 5-7 sentences each
-- [ ] Technical answers: 4 questions, 3-5 sentences each, with examples from **your** output (starter output **and** final output pasted in Question 1)
-- [ ] No `[...]` placeholders left
-- [ ] No section headers deleted
+- [✅ ] Full name and student ID filled in at the top
+- [✅ ] Development log has **5+ entries** on different dates
+- [ ✅] Reflection: 4 questions, 5-7 sentences each
+- [✅ ] Technical answers: 4 questions, 3-5 sentences each, with examples from **your** output (starter output **and** final output pasted in Question 1)
+- [✅ ] No `[...]` placeholders left
+- [✅ ] No section headers deleted
 
 **Video**
 - [ ] 2-3 minutes long, named `StudentID_Assignment3_Demo.mp4`
